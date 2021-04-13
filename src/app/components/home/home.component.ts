@@ -2,14 +2,18 @@ import { Component, OnInit,ViewChild } from '@angular/core';
 import { GoogleChartInterface } from 'ng2-google-charts';
 import { DataServiceService } from 'src/app/services/data-service.service';
 
+
 @Component({
+ 
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
+  
 })
 export class HomeComponent implements OnInit {
   @ViewChild('mychart1 ', {static: false}) mychart1:any;
   @ViewChild('mychart2 ', {static: false}) mychart2:any;
+  @ViewChild('mychart3 ', {static: false}) mychart3:any;
 
   tempConfirmed:number=0;
   tempActive:number=0;
@@ -28,6 +32,7 @@ export class HomeComponent implements OnInit {
   database_active:any[]=[];
   database_recovered:any[]=[];
   database_deaths:any[]=[];
+  database_example:any[]=[];
   public pieChart: GoogleChartInterface = {
     chartType: 'PieChart',
   };
@@ -35,8 +40,15 @@ export class HomeComponent implements OnInit {
   public ColumnChart: GoogleChartInterface = {
     chartType: 'ColumnChart',
   };
-  constructor(private dataservice:DataServiceService) { }
 
+  public geoChart: GoogleChartInterface = {
+    chartType: 'GeoChart'
+  };
+
+  constructor(
+    private dataservice:DataServiceService,
+            ) { }
+           // private geochart:GeochartComponent
 
   initChart(caseType:string){
     // console.log(caseType);
@@ -75,6 +87,24 @@ export class HomeComponent implements OnInit {
         width:1200
       },
     };
+
+    this.geoChart={
+      chartType: 'GeoChart',
+    dataTable: this.database,
+    options: {
+      region: 'IN', // INDIA
+      colorAxis: {colors: ['#00F919', '#0FFFE4', '#1FA20F','#156930','#033E3B']},
+      resolution: 'provinces',
+      backgroundColor: '#00000',
+      datalessRegionColor: '#00000',
+      defaultColor: '#00000',
+      width: 1200,
+      height:500
+    } 
+  };
+
+
+
     // console.log(this.pieChart.dataTable);
   }
 
@@ -86,6 +116,7 @@ export class HomeComponent implements OnInit {
     this.database_active.push(["State","Active Cases"]);
     this.database_recovered.push(["State","Recovered Cases"]);
     this.database_deaths.push(["State","Death Cases"]);
+  
     this.dataservice.getCovidData().
       subscribe({
         next:(result)=>{
@@ -123,10 +154,20 @@ export class HomeComponent implements OnInit {
             this.database_recovered.push([this.dataservice.getStateName(i),this.tempRecovered]);
             this.database_deaths.push([this.dataservice.getStateName(i),this.tempDeath]);
             
+            //send service data to geocharcomponent 
+            
+            
           }
           // console.log(this.database);
           this.initChart('c');
-        }
+          //this.dataservice.storePassedObject(this.database_confirmed);
+         // this.database_example=this .dataservice.retrievePassedObject();
+          //this.geochart.getDataForMap();
+          
+          
+          //console.log(this.database_example);
+          
+        } 
       });
 
   }
@@ -134,8 +175,9 @@ export class HomeComponent implements OnInit {
   updateChart(input:HTMLInputElement){
     // console.log(input.value);
     this.initChart(input.value);
-    this.mychart1.draw();
+   this.mychart1.draw();
     this.mychart2.draw();
+    this.mychart3.draw();
    
   }
 

@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {map} from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
+
 import { covidDataSumary } from '../models/coviddata';
 
 @Injectable({
@@ -9,9 +11,13 @@ import { covidDataSumary } from '../models/coviddata';
 export class DataServiceService {
 
   private globalDataUrl=`https://api.covid19india.org/state_district_wise.json`
+  
+
   constructor(private http:HttpClient) { }
 
   stateName:any[]=[]; //It will hold the stateName 
+
+  
 
   getCovidData(){
     return this.http.get(this.globalDataUrl,{responseType:'json'}).pipe(
@@ -45,8 +51,31 @@ export class DataServiceService {
     ); 
   }
 
+
+  
+  //:any[]=[];
+  //database_confirmed:any[]=[];
+  //database_confirmed: BehaviourSubject<any> = new BehaviourSubject<any>([]);
+
+
+    public database_confirmed:any[]=[];
+
+    storePassedObject(passedData:any[]) {
+      this.database_confirmed=passedData;
+       
+    }
+
+    retrievePassedObject() {
+        return this.database_confirmed;
+        
+    }
   
   getStateName(index:number) {
     return this.stateName[index];
   }
+
+
+  
+
+
 }
